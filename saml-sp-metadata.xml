@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           urn:mace:shibboleth:2.0:metadata http://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd"
+
+       default-init-method="initialize"
+       default-destroy-method="destroy">
+
+  <md:EntityDescriptor entityID="sp.local.uk">
+    <md:SPSSODescriptor AuthnRequestsSigned="false" ID="sp.local.uk"
+       protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+         Location="https://sp.local.uk:8443/rfp/saml/acs" index="1" isDefault="true"/>
+    </md:SPSSODescriptor>
+  </md:EntityDescriptor>
+</beans>

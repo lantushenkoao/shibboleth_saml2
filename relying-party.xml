@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       
+       xmlns:metadata="urn:mace:shibboleth:2.0:metadata"
+       xmlns:rp="urn:mace:shibboleth:2.0:relying-party"
+       xmlns:saml="urn:mace:shibboleth:2.0:relying-party:saml"
+       xmlns:samlmd="urn:oasis:names:tc:SAML:2.0:metadata"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           urn:mace:shibboleth:2.0:metadata http://shibboleth.net/schema/idp/shibboleth-metadata.xsd
+                           urn:mace:shibboleth:2.0:relying-party http://shibboleth.net/schema/idp/shibboleth-relying-party.xsd
+                           urn:mace:shibboleth:2.0:relying-party:saml http://shibboleth.net/schema/idp/shibboleth-relying-party-saml.xsd
+                           urn:oasis:names:tc:SAML:2.0:metadata http://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd
+"
+                           
+       default-init-method="initialize"
+       default-destroy-method="destroy">
+
+	<rp:RelyingParty id="sp.local.uk" provider="https://idp.local.uk/idp/shibboleth">
+	   <rp:ProfileConfiguration xsi:type="saml:SAML2SSOProfile"
+	       signResponses="never" signAssertions="always"
+	       encryptNameIds="never" encryptAssertions="never" />
+	</rp:RelyingParty>
+
+    <!--
+	<metadata:MetadataProvider id="spMD" xsi:type="metadata:FilesystemMetadataProvider"
+                               metadataFile="l:/Shibboleth/shibboleth-identity-provider-3.3.1/conf/saml-sp-metadata.xml"/>
+-->
+
+
+    <!--
+    Unverified RP configuration, defaults to no support for any profiles. Add <ref> elements to the list
+    to enable specific default profile settings (as below), or create new beans inline to override defaults.
+    
+    "Unverified" typically means the IdP has no metadata, or equivalent way of assuring the identity and
+    legitimacy of a requesting system. To run an "open" IdP, you can enable profiles here.
+    -->
+    <bean id="shibboleth.UnverifiedRelyingParty" parent="RelyingParty">
+        <property name="profileConfigurations">
+            <list>
+                <!--
+                <bean parent="SAML2.SSO" p:encryptAssertions="false" />
+                -->
+            </list>
+        </property>
+    </bean>
+
+    <!--
+    Default configuration, with default settings applied for all profiles, and enables
+    the attribute-release consent flow.
+    -->
+    <bean id="shibboleth.DefaultRelyingParty" parent="RelyingParty">
+        <property name="profileConfigurations">
+            <list>
+                <bean parent="Shibboleth.SSO" p:postAuthenticationFlows="attribute-release" />
+                <ref bean="SAML1.AttributeQuery" />
+                <ref bean="SAML1.ArtifactResolution" />
+
+                <!--<bean parent="SAML2.SSO" p:postAuthenticationFlows="attribute-release" /> -->
+                <bean parent="SAML2.SSO" p:postAuthenticationFlows="attribute-release" />
+
+                <ref bean="SAML2.ECP" />
+                <ref bean="SAML2.Logout" />
+                <ref bean="SAML2.AttributeQuery" />
+                <ref bean="SAML2.ArtifactResolution" />
+                <ref bean="Liberty.SSOS" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- Container for any overrides you want to add. -->
+
+    <util:list id="shibboleth.RelyingPartyOverrides">
+<!--        <ref bean="sp.local.uk" />
+
+        <rp:RelyingParty id="sp.local.uk" provider="https://idp.local.uk/idp/shibboleth">
+            <rp:ProfileConfiguration xsi:type="saml:SAML2SSOProfile"
+                                     signResponses="never" signAssertions="always"
+                                     encryptNameIds="never" encryptAssertions="never" />
+        </rp:RelyingParty>-->
+
+        <bean parent="RelyingPartyByName" c:relyingPartyIds="sp.local.uk">
+            <property name="profileConfigurations">
+                <list>
+                    <bean parent="SAML2.SSO" p:signAssertions="true" />
+                </list>
+            </property>
+        </bean>
+        <!--
+        Override example that identifies a single RP by name and configures it
+        for SAML 2 SSO without encryption. This is a common "vendor" scenario.
+        -->
+        <!--
+        <bean parent="RelyingPartyByName" c:relyingPartyIds="https://sp.example.org">
+            <property name="profileConfigurations">
+                <list>
+                    <bean parent="SAML2.SSO" p:encryptAssertions="false" />
+                </list>
+            </property>
+        </bean>
+        -->
+        
+    </util:list>
+
+</beans>

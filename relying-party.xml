@@ -21,7 +21,8 @@
        default-init-method="initialize"
        default-destroy-method="destroy">
 
-	<rp:RelyingParty id="sp.local.uk" provider="https://idp.local.uk/idp/shibboleth">
+	<rp:RelyingParty id="sp.local.uk" provider="https://idp.local.uk/idp/shibboleth"
+                     nameIDFormatPrecedence="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">
 	   <rp:ProfileConfiguration xsi:type="saml:SAML2SSOProfile"
 	       signResponses="never" signAssertions="always"
 	       encryptNameIds="never" encryptAssertions="never" />
@@ -87,7 +88,7 @@
         <bean parent="RelyingPartyByName" c:relyingPartyIds="sp.local.uk">
             <property name="profileConfigurations">
                 <list>
-                    <bean parent="SAML2.SSO" p:signAssertions="true" />
+                    <bean parent="SAML2.SSO" p:signAssertions="true" p:nameIDFormatPrecedence="urn:oasis:names:tc:SAML:1.1:nameid-format:persistent" />
                 </list>
             </property>
         </bean>

@@ -18,6 +18,8 @@
                                     protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
                 <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                                              Location="https://sp.local.uk:8443/rfp/saml/acs" index="1" isDefault="true"/>
+                <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                                             Location="https://sp.local.uk:8443/rfp/saml/respondentAcs" index="2" isDefault="false"/>
             </md:SPSSODescriptor>
         </md:EntityDescriptor>
     </MetadataProvider>
